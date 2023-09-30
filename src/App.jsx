@@ -1,7 +1,13 @@
+import { Route, Routes } from 'react-router-dom';
 
-function App() {
+import { ShopPage, ShopsListPage } from './pages/index.js';
+
+const App = () => {
   return (
-    <div>Hello world</div>
+    <Routes>
+      <Route path={'/'} element={<ShopsListPage/>}/>
+      <Route path={'/shop/:id'} element={<ShopPage/>}/>
+    </Routes>
   )
 }
 
