@@ -1,2 +1,2 @@
-export * from './ShopsListPage/ShopsListPage.jsx';
-export * from './ShopPage/ShopPage.jsx';
+export * from './ShopsPage/ShopsPage.jsx';
+export * from './ShopSettingsPage/ShopSettingsPage.jsx';

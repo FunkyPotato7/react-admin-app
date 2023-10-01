@@ -1,12 +1,12 @@
 import { Route, Routes } from 'react-router-dom';
 
-import { ShopPage, ShopsListPage } from './pages/index.js';
+import { ShopSettingsPage, ShopsPage } from './pages/index.js';
 
 const App = () => {
   return (
     <Routes>
-      <Route path={'/'} element={<ShopsListPage/>}/>
-      <Route path={'/shop/:id'} element={<ShopPage/>}/>
+      <Route path={'/'} element={<ShopsPage/>}/>
+      <Route path={'/shop/:id'} element={<ShopSettingsPage/>}/>
     </Routes>
   )
 }

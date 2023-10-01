@@ -1,14 +1,14 @@
-import { Shop } from '../../components/index.js';
+import { ShopSettings } from '../../components/index.js';
 
-const ShopPage = () => {
+const ShopSettingsPage = () => {
     return (
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '150px' }}>
-            <Shop/>
+            <ShopSettings/>
         </div>
     )
 
 }
 
 export {
-    ShopPage
+    ShopSettingsPage
 }
