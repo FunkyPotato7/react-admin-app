@@ -27,10 +27,8 @@ const ShopSettings = () => {
     const handleSelect = (selectedKeys, { node }) => {
         if (!node.children) {
             setQuery(`${parent}/${node.name}`)
-           ShopService.getFile(id, { key: `${parent}/${node.name}` })
-               .then(({ data }) => {
-                   setInputValue(data.base64content)
-               });
+            ShopService.getFile(id, { key: `${parent}/${node.name}` })
+                  .then(({ data }) => setInputValue(data.base64content));
         }
     }
 

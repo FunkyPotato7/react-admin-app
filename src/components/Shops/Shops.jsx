@@ -47,12 +47,20 @@ const Shops = () => {
     const handleAddSnippets = (id, event) => {
         event.stopPropagation();
         ShopService.addSnippets(id);
+        setTimeout(async () => {
+            const { data } = await ShopService.getAll();
+            setShops(data);
+        }, 1000)
     };
 
 
     const handleRemoveSnippets = (id, event) => {
         event.stopPropagation();
         ShopService.removeSnippets(id);
+        setTimeout(async () => {
+            const { data } = await ShopService.getAll();
+            setShops(data);
+        }, 1000)
     };
 
     const columns = [
