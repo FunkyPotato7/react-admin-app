@@ -10,6 +10,7 @@ const { Title, Text } = Typography;
 const ShopSettings = () => {
     const { id } = useParams();
     const [shop, setShop] = useState(null);
+    const [error, setError] = useState(null);
     const [files, setFiles] = useState([]);
     const [parent, setParent] = useState('');
     const [query, setQuery] = useState('');
@@ -18,7 +19,9 @@ const ShopSettings = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            ShopService.getById(id).then(({ data }) => setShop(data));
+            ShopService.getById(id)
+                .then(({ data }) => setShop(data))
+                .catch(err => setError(err.response));
             ShopService.getFiles(id).then(({ data }) => setFiles(data));
         }, 2000)
 
@@ -45,8 +48,15 @@ const ShopSettings = () => {
         setInputValue('');
     };
 
+    console.log(error);
+
     return (
         <Card className={css.card}>
+            {error &&
+                <div className={css.errorContent}>
+                    <h1>{error.data}</h1>
+                </div>
+            }
             {shop ?
                 <div className={css.content}>
                     <div className={css.info}>
@@ -93,7 +103,7 @@ const ShopSettings = () => {
                     </div>
                 </div>
                 :
-                <div className={css.loading}>
+                !error && <div className={css.loading}>
                     <Spin/>
                 </div>
             }
