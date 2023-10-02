@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {Button, Card, Input, Spin, Tree, Typography} from 'antd';
+import { Button, Input, Spin, Tree, Typography } from 'antd';
 
 import css from './ShopSettings.module.css';
 import { ShopService } from '../../services/index.js';
 
+const { DirectoryTree } = Tree;
+const { TextArea } = Input;
 const { Title, Text } = Typography;
 
 const ShopSettings = () => {
@@ -22,7 +24,19 @@ const ShopSettings = () => {
             ShopService.getById(id)
                 .then(({ data }) => setShop(data))
                 .catch(err => setError(err.response));
-            ShopService.getFiles(id).then(({ data }) => setFiles(data));
+            ShopService.getFiles(id).then(({ data }) => {
+                data.map((el, firstIndex) => {
+                    el.key = '0-' + firstIndex;
+                    if ( el.children.length ) {
+                        el.children.map((child, index) => {
+                            child.key = '0-' + firstIndex + '-' + index;
+                            child.isLeaf = true;
+                        })
+                    }
+                    console.log(el)
+                })
+                setFiles(data)
+            });
         }, 2000)
 
     }, [])
@@ -48,10 +62,8 @@ const ShopSettings = () => {
         setInputValue('');
     };
 
-    console.log(error);
-
     return (
-        <Card className={css.card}>
+        <div className={css.card}>
             {error &&
                 <div className={css.errorContent}>
                     <h1>{error.data}</h1>
@@ -70,7 +82,7 @@ const ShopSettings = () => {
                         </div>
                         <Text>Files:</Text>
                         <div className={css.tree}>
-                            <Tree
+                            <DirectoryTree
                                 treeData={files}
                                 fieldNames={{ title: "name" }}
                                 onExpand={(_, { node }) => {
@@ -81,21 +93,25 @@ const ShopSettings = () => {
                         </div>
                     </div>
                     <div className={css.form}>
-                        <Input
+                        <TextArea
+                            rows={16}
                             value={inputValue}
                             disabled={!inputValue}
+                            style={{ resize: 'none' }}
                             onChange={handleInputChange}
                         />
                         <div className={css.buttons}>
                             <Button
-                                onClick={Save}
+                                className={css.button}
                                 disabled={!inputValue}
+                                onClick={Save}
                             >
                                 Save
                             </Button>
                             <Button
-                                onClick={Cancel}
+                                className={css.button}
                                 disabled={!inputValue}
+                                onClick={Cancel}
                             >
                                 Cancel
                             </Button>
@@ -107,8 +123,13 @@ const ShopSettings = () => {
                     <Spin/>
                 </div>
             }
-            <Button onClick={() => navigate('/')}>Back</Button>
-        </Card>
+            <Button
+                className={css.button}
+                onClick={() => navigate('/')}
+            >
+                Back
+            </Button>
+        </div>
     )
 
 }

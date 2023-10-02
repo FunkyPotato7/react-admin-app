@@ -14,7 +14,8 @@ import { ShopService } from '../../services';
 
 const Shops = () => {
     const [shops, setShops] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(0);
+    const [snippetsLoading, setSnippetsLoading] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,43 +24,47 @@ const Shops = () => {
 
     const handleEnableClick = async (id, event) => {
         event.stopPropagation();
-        setLoading(true);
+        setLoading(id);
         await ShopService.enable(id)
         setTimeout(async () => {
             const { data } = await ShopService.getAll();
             setShops(data);
-            setLoading(false);
+            setLoading(0);
         }, 1000)
 
     };
 
     const handleDisableClick = async (id, event) => {
         event.stopPropagation();
-        setLoading(true);
+        setLoading(id);
         await ShopService.disable(id);
         setTimeout(async () => {
             const { data } = await ShopService.getAll();
             setShops(data);
-            setLoading(false);
+            setLoading(0);
         }, 1000)
     };
 
     const handleAddSnippets = (id, event) => {
         event.stopPropagation();
+        setSnippetsLoading(id);
         ShopService.addSnippets(id);
         setTimeout(async () => {
             const { data } = await ShopService.getAll();
             setShops(data);
+            setSnippetsLoading(0);
         }, 1000)
     };
 
 
     const handleRemoveSnippets = (id, event) => {
         event.stopPropagation();
+        setSnippetsLoading(id);
         ShopService.removeSnippets(id);
         setTimeout(async () => {
             const { data } = await ShopService.getAll();
             setShops(data);
+            setSnippetsLoading(0);
         }, 1000)
     };
 
@@ -84,22 +89,25 @@ const Shops = () => {
             title: 'Snippets',
             dataIndex: 'snippetsAdded',
             render: (_, record) => (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    {record.snippetsAdded && "snippetsAdded" || "no data"}
-                    <div style={{ width: '75px', display: "flex", justifyContent: "space-between" }}>
-                        <Button
-                            type="primary"
-                            shape="circle"
-                            icon={<PlusOutlined />}
-                            onClick={(e) => handleAddSnippets(record._id, e)}
-                        />
-                        <Button
-                            type="default"
-                            shape="circle"
-                            icon={<DeleteOutlined />}
-                            onClick={(e) => handleRemoveSnippets(record._id, e)}
-                        />
-                    </div>
+                <div className={css.snippetButtons}>
+                    {record.snippetsAdded && "snippets added" || "no data"}
+                        {!record.snippetsAdded ?
+                            <Button
+                                className={css.button}
+                                type="primary"
+                                shape="circle"
+                                icon={snippetsLoading === record._id && <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: "white" }} spin />} /> || <PlusOutlined />}
+                                onClick={(e) => handleAddSnippets(record._id, e)}
+                            />
+                            :
+                            <Button
+                                className={css.button}
+                                type="default"
+                                shape="circle"
+                                icon={snippetsLoading === record._id && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /> ||  <DeleteOutlined />}
+                                onClick={(e) => handleRemoveSnippets(record._id, e)}
+                            />
+                        }
                 </div>
             ),
         },
@@ -114,10 +122,10 @@ const Shops = () => {
                             <Button
                                 style={{ width: '75px' }}
                                 type="default"
-                                disabled={!record.snippetsAdded || loading}
+                                disabled={!record.snippetsAdded || loading === record._id}
                                 onClick={(e) => handleDisableClick(record._id, e)}
                             >
-                                {loading && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /> || 'Disable'}
+                                {loading === record._id && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /> || 'Disable'}
                             </Button>
                         </div>
                         :
@@ -126,10 +134,10 @@ const Shops = () => {
                             <Button
                                 style={{ width: '75px' }}
                                 type="primary"
-                                disabled={!record.snippetsAdded || loading}
+                                disabled={!record.snippetsAdded || loading === record._id}
                                 onClick={(e) => handleEnableClick(record._id, e)}
                             >
-                                {loading && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /> || 'Enable'}
+                                {loading === record._id && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /> || 'Enable'}
                             </Button>
                         </div>
                     }
@@ -143,6 +151,7 @@ const Shops = () => {
         <div className={css.main}>
             <Table
                 sticky={true}
+                rowKey='_id'
                 columns={columns}
                 dataSource={shops}
                 pagination={false}
