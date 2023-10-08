@@ -1,7 +1,12 @@
-import { Shops } from '../../components/index.js';
+import { Header, Shops } from '../../components/index.js';
 
 const ShopsPage = () => {
-    return <Shops/>
+    return (
+        <div>
+            <Header/>
+            <Shops/>
+        </div>
+    )
 }
 
 export {

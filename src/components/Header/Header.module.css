@@ -1,0 +1,29 @@
+img {
+    width: 40px;
+    border-radius: 50%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-bottom: 1px solid black;
+    padding: 0 50px 0 50px;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 220px;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 105px;
+}

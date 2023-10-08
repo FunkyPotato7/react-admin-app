@@ -1,12 +1,15 @@
 import { Route, Routes } from 'react-router-dom';
 
-import { NotFoundPage, ShopSettingsPage, ShopsPage } from './pages/index.js';
+import { LoginPage, NotFoundPage, ShopSettingsPage, ShopsPage } from './pages/index.js';
+import { AuthenticationGuard } from './components/authentication-guard.jsx';
 
 const App = () => {
-  return (
+
+    return (
     <Routes>
         <Route path={'/'} element={<ShopsPage/>}/>
-        <Route path={'/shop/:id'} element={<ShopSettingsPage/>}/>
+        <Route path={'/login'} element={<LoginPage/>}/>
+        <Route path={'/shop/:id'} element={<AuthenticationGuard component={ShopSettingsPage}/>}/>
         <Route path={'*'} element={<NotFoundPage/>}/>
     </Routes>
   )

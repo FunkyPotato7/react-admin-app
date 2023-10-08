@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button, Spin, Table } from 'antd';
 import {
     CheckCircleOutlined,
@@ -16,7 +16,6 @@ const Shops = () => {
     const [shops, setShops] = useState([]);
     const [loading, setLoading] = useState(0);
     const [snippetsLoading, setSnippetsLoading] = useState(0);
-    const navigate = useNavigate();
 
     useEffect(() => {
         ShopService.getAll().then(({ data }) => setShops(data));
@@ -80,6 +79,12 @@ const Shops = () => {
         {
             title: 'Name',
             dataIndex: 'name',
+            render: (_, record) => (
+                <Link to={`/shop/${record._id}`}>
+                    {record.name}
+                </Link>
+            ),
+
         },
         {
             title: 'Pricing Plan',
@@ -155,9 +160,6 @@ const Shops = () => {
                 columns={columns}
                 dataSource={shops}
                 pagination={false}
-                onRow={(record) => ({
-                    onClick: () => navigate(`/shop/${record._id}`)
-                })}
             />
         </div>
     )

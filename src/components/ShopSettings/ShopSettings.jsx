@@ -20,25 +20,21 @@ const ShopSettings = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setTimeout(() => {
-            ShopService.getById(id)
-                .then(({ data }) => setShop(data))
-                .catch(err => setError(err.response));
-            ShopService.getFiles(id).then(({ data }) => {
-                data.map((el, firstIndex) => {
-                    el.key = '0-' + firstIndex;
-                    if ( el.children.length ) {
-                        el.children.map((child, index) => {
-                            child.key = '0-' + firstIndex + '-' + index;
-                            child.isLeaf = true;
-                        })
-                    }
-                    console.log(el)
-                })
-                setFiles(data)
-            });
-        }, 2000)
-
+        ShopService.getById(id)
+            .then(({ data }) => setShop(data))
+            .catch(err => setError(err.response));
+        ShopService.getFiles(id).then(({ data }) => {
+            data.map((el, firstIndex) => {
+                el.key = '0-' + firstIndex;
+                if ( el.children.length ) {
+                    el.children.map((child, index) => {
+                        child.key = '0-' + firstIndex + '-' + index;
+                        child.isLeaf = true;
+                    })
+                }
+            })
+            setFiles(data)
+        });
     }, [])
 
     const handleSelect = (selectedKeys, { node }) => {
@@ -120,7 +116,7 @@ const ShopSettings = () => {
                 </div>
                 :
                 !error && <div className={css.loading}>
-                    <Spin/>
+                    <Spin size="large"/>
                 </div>
             }
             <Button
