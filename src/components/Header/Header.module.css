@@ -8,6 +8,7 @@ img {
     justify-content: space-between;
     align-items: center;
 
+    height: 60px;
     border-bottom: 1px solid black;
     padding: 0 50px 0 50px;
 }

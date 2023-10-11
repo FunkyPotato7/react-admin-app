@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Spin, Table } from 'antd';
+import { message, Button, Spin, Table} from 'antd';
 import {
     CheckCircleOutlined,
     CloseCircleOutlined,
@@ -11,60 +11,105 @@ import {
 
 import css from './Shops.module.css';
 import { ShopService } from '../../services';
+import { ServerError } from '../ServerError/ServerError.jsx';
+import { ForbiddenError } from '../ForbiddenError/ForbiddenError.jsx';
 
 const Shops = () => {
     const [shops, setShops] = useState([]);
-    const [loading, setLoading] = useState(0);
-    const [snippetsLoading, setSnippetsLoading] = useState(0);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState('');
+    const [snippetsLoading, setSnippetsLoading] = useState('');
+    const [messageApi, contextHolder] = message.useMessage();
 
     useEffect(() => {
-        ShopService.getAll().then(({ data }) => setShops(data));
+        ShopService.getAll()
+            .then(({ data }) => setShops(data))
+            .catch((e) => {
+                setError(e);
+            })
     }, [])
 
-    const handleEnableClick = async (id, event) => {
-        event.stopPropagation();
-        setLoading(id);
-        await ShopService.enable(id)
-        setTimeout(async () => {
-            const { data } = await ShopService.getAll();
-            setShops(data);
-            setLoading(0);
-        }, 1000)
+    if (error?.response.status === 500) {
+        return <ServerError/>
+    } else if (error?.response.status === 403) {
+        return <ForbiddenError/>
+    }
 
+    const handleEnableClick = async (id, event) => {
+        try {
+            event.stopPropagation();
+            setLoading(id);
+            await ShopService.enable(id)
+            setTimeout(async () => {
+                const { data } = await ShopService.getAll();
+                setShops(data);
+                setLoading('');
+            }, 1000)
+        } catch (e) {
+            setLoading('');
+            messageApi.open({
+                type: 'error',
+                content: `${e.response.status} ${e.response.data}`,
+            });
+        }
     };
 
     const handleDisableClick = async (id, event) => {
-        event.stopPropagation();
-        setLoading(id);
-        await ShopService.disable(id);
-        setTimeout(async () => {
-            const { data } = await ShopService.getAll();
-            setShops(data);
-            setLoading(0);
-        }, 1000)
+        try {
+            event.stopPropagation();
+            setLoading(id);
+            await ShopService.disable(id);
+            setTimeout(async () => {
+                const { data } = await ShopService.getAll();
+                setShops(data);
+                setLoading('');
+            }, 1000)
+        } catch (e) {
+            setLoading('');
+            messageApi.open({
+                type: 'error',
+                content: `${e.response.status} ${e.response.data}`,
+            });
+        }
     };
 
-    const handleAddSnippets = (id, event) => {
-        event.stopPropagation();
-        setSnippetsLoading(id);
-        ShopService.addSnippets(id);
-        setTimeout(async () => {
-            const { data } = await ShopService.getAll();
-            setShops(data);
-            setSnippetsLoading(0);
-        }, 1000)
+    const handleAddSnippets = async (id, event) => {
+        try {
+            event.stopPropagation();
+            setSnippetsLoading(id);
+            await ShopService.addSnippets(id);
+            setTimeout(async () => {
+                const { data } = await ShopService.getAll();
+                setShops(data);
+                setSnippetsLoading('');
+            }, 1000)
+        } catch (e) {
+            setSnippetsLoading('');
+            messageApi.open({
+                type: 'error',
+                content: `${e.response.status} ${e.response.data}`,
+            });
+        }
     };
 
 
-    const handleRemoveSnippets = (id, event) => {
-        event.stopPropagation();
-        setSnippetsLoading(id);
-        ShopService.removeSnippets(id);
-        setTimeout(async () => {
-            const { data } = await ShopService.getAll();
-            setShops(data);
-            setSnippetsLoading(0);
-        }, 1000)
+    const handleRemoveSnippets = async (id, event) => {
+        try {
+            event.stopPropagation();
+            setSnippetsLoading(id);
+            await ShopService.removeSnippets(id);
+            setTimeout(async () => {
+                const { data } = await ShopService.getAll();
+                setShops(data);
+                setSnippetsLoading(0);
+            }, 1000)
+        } catch (e) {
+            setSnippetsLoading('');
+            messageApi.open({
+                type: 'error',
+                content: `${e.response.status} ${e.response.data}`,
+            });
+        }
     };
 
     const columns = [
@@ -154,13 +199,21 @@ const Shops = () => {
 
     return (
         <div className={css.main}>
-            <Table
-                sticky={true}
-                rowKey='_id'
-                columns={columns}
-                dataSource={shops}
-                pagination={false}
-            />
+            {!shops.length &&
+                <div className={css.spinnerBox}>
+                    <Spin className={css.spin} size="large"/>
+                </div>
+            }
+            {shops.length &&
+                <Table
+                    sticky={true}
+                    rowKey='_id'
+                    columns={columns}
+                    dataSource={shops}
+                    pagination={false}
+                />
+            }
+            {contextHolder}
         </div>
     )
 }

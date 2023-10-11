@@ -1,9 +1,9 @@
 import { Header, Shops } from '../../components/index.js';
 
-const ShopsPage = () => {
+const ShopsPage = ({ user }) => {
     return (
         <div>
-            <Header/>
+            <Header user={user}/>
             <Shops/>
         </div>
     )
